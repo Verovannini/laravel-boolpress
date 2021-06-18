@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
+
+Route::get('/blog', 'PostController@index')->name('blog');
+Route::get('/blog/{slug}', 'PostController@show')->name('blog-details');
 
 Route::prefix('admin')
     ->namespace('Admin')

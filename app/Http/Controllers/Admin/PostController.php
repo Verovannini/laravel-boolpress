@@ -92,7 +92,9 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        return view('admin.posts.edit', compact('post'));
     }
 
     /**
@@ -104,7 +106,38 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate($this->getValidationRules());
+
+        $modified_form_data = $request->all();
+
+        $post = Post::findOrFail($id);
+
+        $modified_form_data['slug'] = $post->slug;
+
+        // Se il titolo cambia allora modifico lo slug
+        if($modified_form_data['title'] != $post->title) {
+
+            // Creo lo slug
+            $new_slug = Str::slug($modified_form_data['title'], '-');
+            $base_slug = $new_slug;
+
+            // Controllo se esiste già uno slug uguale
+            $existing_post_with_slug = Post::where('slug', '=', $new_slug)->first();
+            $counter = 1;
+
+            // Se esiste già uno slug uguale aggiungo il counter
+            while($existing_post_with_slug) {
+                $new_slug = $base_slug . '-' . $counter;
+                $counter++;
+                $existing_post_with_slug = Post::where('slug', '=', $new_slug)->first();
+            }
+
+            $modified_form_data['slug'] = $new_slug;
+        }
+
+        $post->update($modified_form_data);
+
+        return redirect()-> route('admin.posts.show', ['post' => $post->id]);
     }
 
     /**
@@ -115,7 +148,10 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post_to_delete = Post::find($id);
+        $post_to_delete->delete();
+
+        return redirect()->route('admin.posts.index');
     }
 
     // Funzione che ritorna le regole di validazione

@@ -22,6 +22,11 @@ class PostController extends Controller
             abort('404');
         }
 
-        return view('guests.posts.show', compact('post'));
+        $data = [
+            'post' => $post,
+            'post_category' => $post->category
+        ];
+
+        return view('guests.posts.show', $data);
     }
 }

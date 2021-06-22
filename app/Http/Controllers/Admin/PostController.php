@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Str;
+use App\Category;
 
 class PostController extends Controller
 {
@@ -28,7 +29,13 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('admin.posts.create');
+        $categories = Category::all();
+
+        $data = [
+            'categories' => $categories
+        ];
+
+        return view('admin.posts.create', $data);
     }
 
     /**
@@ -81,7 +88,12 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        return view('admin.posts.show', compact('post'));
+        $data = [
+            'post' => $post,
+            'post_category' => $post->category
+        ];
+
+        return view('admin.posts.show', $data);
     }
 
     /**
@@ -93,8 +105,15 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::findOrFail($id);
+        
+        $categories = Category::all();
 
-        return view('admin.posts.edit', compact('post'));
+        $data = [
+            'post' => $post,
+            'categories' => $categories
+        ];
+
+        return view('admin.posts.edit', $data);
     }
 
     /**
@@ -158,7 +177,8 @@ class PostController extends Controller
     private function getValidationRules() {
         $validation_rules = [
             'title' => 'required|max:255',
-            'content' => 'required|max:60000'
+            'content' => 'required|max:60000',
+            'category_id' => 'nullable|exists:categories,id'
         ];
 
         return $validation_rules;

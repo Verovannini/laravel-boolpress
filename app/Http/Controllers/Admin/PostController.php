@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Str;
 use App\Category;
+use App\Tag;
 
 class PostController extends Controller
 {
@@ -30,9 +31,11 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $tags = Tag::all();
 
         $data = [
-            'categories' => $categories
+            'categories' => $categories,
+            'tags' => $tags
         ];
 
         return view('admin.posts.create', $data);
@@ -72,6 +75,10 @@ class PostController extends Controller
         $post->fill($form_data);
 
         $post->save();
+
+        if( isset($form_data['tags']) && is_array($form_data['tags']) ) {
+            $post->tags()->sync($form_data['tags']);
+        }
         
         return redirect()->route('admin.posts.show', [
             'post' => $post->id
@@ -90,7 +97,8 @@ class PostController extends Controller
 
         $data = [
             'post' => $post,
-            'post_category' => $post->category
+            'post_category' => $post->category,
+            'post_tags' => $post->tags
         ];
 
         return view('admin.posts.show', $data);
@@ -108,9 +116,12 @@ class PostController extends Controller
         
         $categories = Category::all();
 
+        $tags = Tag::all();
+
         $data = [
             'post' => $post,
-            'categories' => $categories
+            'categories' => $categories,
+            'tags' => $tags
         ];
 
         return view('admin.posts.edit', $data);
@@ -156,6 +167,13 @@ class PostController extends Controller
 
         $post->update($modified_form_data);
 
+        // Aggiornare i tags
+        if( isset($modified_form_data['tags']) && is_array($modified_form_data['tags']) ) {
+            $post->tags()->sync($modified_form_data['tags']);
+        } else{
+            $post->tags()->sync([]);
+        }
+
         return redirect()-> route('admin.posts.show', ['post' => $post->id]);
     }
 
@@ -168,6 +186,8 @@ class PostController extends Controller
     public function destroy($id)
     {
         $post_to_delete = Post::find($id);
+        $post_to_delete->tags()->sync([]);
+
         $post_to_delete->delete();
 
         return redirect()->route('admin.posts.index');
@@ -178,7 +198,8 @@ class PostController extends Controller
         $validation_rules = [
             'title' => 'required|max:255',
             'content' => 'required|max:60000',
-            'category_id' => 'nullable|exists:categories,id'
+            'category_id' => 'nullable|exists:categories,id',
+            'tags' => 'nullable|exists:tags,id'
         ];
 
         return $validation_rules;

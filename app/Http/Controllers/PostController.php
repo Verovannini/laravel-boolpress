@@ -29,4 +29,9 @@ class PostController extends Controller
 
         return view('guests.posts.show', $data);
     }
+
+    // Ritorna la view dei post stampati tramite Vue
+    public function vuePosts() {
+        return view('guests.posts.vue-posts');
+    }
 }

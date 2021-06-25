@@ -20,6 +20,9 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('/blog', 'PostController@index')->name('blog');
 Route::get('/blog/{slug}', 'PostController@show')->name('blog-details');
 
+// View con Vue
+Route::get('/vue-posts', 'PostController@vuePosts')->name('vue-posts');
+
 Route::prefix('admin')
     ->namespace('Admin')
     ->name('admin.')

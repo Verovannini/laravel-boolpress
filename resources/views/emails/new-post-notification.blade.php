@@ -10,7 +10,7 @@
     <div>
         <h1>Ciao amministratore</h1>
 
-        <p>Un nuovo post è stato creato, il titolo è: {{ $new_post->title }}. <a href="{{ route('admin.posts.show', 'post' => $new_post->id) }}">Clicca qui</a> per vederlo</p>
+        <p>Un nuovo post è stato creato, il titolo è: {{ $post->title }}. <a href="{{ route('admin.posts.show', ['post' => $post->id]) }}">Clicca qui</a> per vederlo</p>
     </div>
 </body>
 </html>

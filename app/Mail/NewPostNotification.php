@@ -6,21 +6,22 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Post;
 
 class NewPostNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $new_post;
+    public $post;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($_new_post)
+    public function __construct(Post $post)
     {
-        $this->new_post = $_new_post;
+        $this->post = $post;
     }
 
     /**
@@ -30,10 +31,7 @@ class NewPostNotification extends Mailable
      */
     public function build()
     {
-        $data = [
-            'new_post' => $this->$new_post
-        ];
 
-        return $this->view('emails.new-post-notification', $data);
+        return $this->view('emails.new-post-notification');
     }
 }

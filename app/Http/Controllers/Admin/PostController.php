@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use App\Post;
 use App\Category;
 use App\Tag;
+use App\Mail\NewPostNotification;
 
 class PostController extends Controller
 {
@@ -90,6 +92,9 @@ class PostController extends Controller
             $post->tags()->sync($form_data['tags']);
         }
         
+        // Invio una mail all'amministratore del sito quando viene creato un nuovo post
+        Mail::to('veronica@email.it')->send(new NewPostNotification($post));
+
         return redirect()->route('admin.posts.show', [
             'post' => $post->id
         ]);

@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.posts.update', ['post' => $post->id]) }}" method="post">
+    <form action="{{ route('admin.posts.update', ['post' => $post->id]) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -55,6 +55,20 @@
                     </label>
                 </div>
             @endforeach
+        </div>
+
+        <!-- Input file per caricare le immagini -->
+        <div class="input-group mb-3">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="cover-image" name="cover-image">
+                <label class="custom-file-label" for="cover-image">Scegli immagine di copertina</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @if ($post->cover)
+                <img src="{{ asset('storage/' . $post->cover) }}" alt="{{ $post->title }}">
+            @endif
         </div>
 
         <input class="btn btn-success" type="submit" value="Modifica">

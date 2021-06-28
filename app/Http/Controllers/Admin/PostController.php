@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Post;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use App\Post;
 use App\Category;
 use App\Tag;
 
@@ -70,6 +71,15 @@ class PostController extends Controller
         }
 
         $form_data['slug'] = $new_slug;
+
+        // Aggiungo immagine
+        if (isset($form_data['cover-image'])) {
+            $img_path = Storage::put('post-cover', $form_data['cover-image']);
+
+            if ($img_path) {
+                $form_data['cover'] = $img_path;
+            }
+        }
 
         $post = new Post();
         $post->fill($form_data);
@@ -165,6 +175,15 @@ class PostController extends Controller
             $modified_form_data['slug'] = $new_slug;
         }
 
+        // Aggiungo immagine
+        if (isset($modified_form_data['cover-image'])) {
+            $img_path = Storage::put('post-cover', $modified_form_data['cover-image']);
+
+            if ($img_path) {
+                $modified_form_data['cover'] = $img_path;
+            }
+        }
+
         $post->update($modified_form_data);
 
         // Aggiornare i tags
@@ -199,7 +218,8 @@ class PostController extends Controller
             'title' => 'required|max:255',
             'content' => 'required|max:60000',
             'category_id' => 'nullable|exists:categories,id',
-            'tags' => 'nullable|exists:tags,id'
+            'tags' => 'nullable|exists:tags,id',
+            'cover' => 'nullable|image'
         ];
 
         return $validation_rules;
